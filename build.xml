@@ -1,0 +1,77 @@
+<project default="master-build">
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="src/Lang/Gen/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="init-build-system">
+		<echo message="init-build-system" />
+		<mkdir dir="src/Lang/Gen/log" />
+	</target>
+
+	<target name="parser-build">
+		<echo message="start parser-build" />
+		<foreach target="parser-build-file" param="file">
+			<path>
+				<fileset dir="src/Lang/Gen" casesensitive="yes">
+					<include name="**/*.y" />
+				</fileset>
+			</path>
+		</foreach>
+		<echo message="finish parser-build" />
+	</target>
+
+	<target name="parser-build-file">
+		<basename property="filename" file="${file}" suffix=".y" />
+		<echo message="generate parser for: ${filename}" />
+		<exec executable="happy">
+			<arg value="-isrc/Lang/Gen/log/${filename}.log" />
+			<arg value="--outfile=src/Lang/Gen/${filename}.hs" />
+			<arg value="${file}" />
+		</exec>
+	</target>
+
+	<target name="lexer-build">
+		<echo message="start lexer-build" />
+		<foreach target="lexer-build-file" param="file">
+			<path>
+				<fileset dir="src/Lang/Gen" casesensitive="yes">
+					<include name="**/*.x" />
+				</fileset>
+			</path>
+		</foreach>
+		<echo message="finish lexer-build" />
+	</target>
+
+	<target name="lexer-build-file">
+		<basename property="filename" file="${file}" suffix=".x" />
+		<echo message="generate lexer for: ${filename}" />
+		<exec executable="alex">
+			<arg value="--outfile=src/Lang/Gen/Lexer.hs" />
+			<arg value="${file}" />
+		</exec>
+	</target>
+
+	<target name="executable-build">
+		<echo message="start executable-build" />
+		<exec executable="cabal">
+			<arg value="install" />
+			<arg value="--force-reinstalls" />
+			<arg value="--only-dependencies" />
+		</exec>
+		<exec executable="cabal">
+			<arg value="configure" />
+		</exec>
+		<exec executable="cabal">
+			<arg value="build" />
+		</exec>
+		<echo message="end executable-build" />
+	</target>
+
+	<target name="master-build" depends="init-build-system, lexer-build, parser-build, executable-build">
+		<echo message="master-build" />
+	</target>
+
+</project>

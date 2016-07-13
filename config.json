@@ -1,0 +1,23 @@
+{
+  "name": "MiniRuby",
+  "levels": [
+    {
+      "name": "Level 1",
+      "description": "Addition and Multiplication",
+      "options": {}
+    },
+    {
+      "name": "Level 2",
+      "description": "Subtraction and Division",
+      "options": {}
+    }
+  ],
+  "levelCodeFileTypes": [
+    "lrb"
+  ],
+  "objectCodeFileType": "rb",
+  "lineCommentPattern": "# <comment>",
+  "executionCommandPatterns": [
+    "ruby <filePath>"
+  ]
+}
